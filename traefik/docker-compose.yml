@@ -125,8 +125,8 @@ volumes:
 
 # Define as redes que serão usadas pelos serviços
 networks:
-  # Usa uma rede Docker já existente chamada 'traefik-public'
-  traefik-public:
+  # Usa uma rede Docker já existente chamada 'traefik'
+  traefik:
     # O 'external: true' indica que a rede 'traefik' já deve existir previamente.
     # Isso é útil quando você quer que múltiplos serviços compartilhem uma rede
     external: true  
