@@ -1,66 +1,77 @@
+# Define os serviços que serão executados no Docker
 services:
-  traefik:
-    container_name: traefik
-    image: "traefik:latest"
+
+  # Serviço Portainer, ferramenta de gerenciamento de containers Docker
+  portainer:
+    # Nome do container para facilitar identificação
+    container_name: portainer
+    # Define a imagem do Portainer com uma versão específica
+    image: portainer/portainer-ce:2.20.1
+    # Reinicia automaticamente o container em caso de falha
     restart: always
+
+    # Comandos específicos a serem executados ao iniciar o container
     command:
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --api.dashboard=true
-      - --providers.docker
-      - --providers.docker.network=traefik-public
-      - --log.level=ERROR
-      - --certificatesresolvers.leresolver.acme.httpchallenge=true
-      - --certificatesresolvers.leresolver.acme.email=youremail@gmail.com
-      - --certificatesresolvers.leresolver.acme.storage=/acme.json
-      - --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web
+      # Conecta o Portainer ao Docker através do socket Unix
+      - -H unix:///var/run/docker.sock
+
+    # Mapeamento de portas
     ports:
-      - "80:80"
-      - "443:443"
+      # Mapeia a porta 9000 do container para a porta 9000 do host (Interface Web)
+      - "9000:9000"
+
+    # Volumes compartilhados
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./acme.json:/acme.json"
-    labels:
-      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.http-catchall.entrypoints=web"
-      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.yourdomain.com`)"
-      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.traefik-dashboard.service=api@internal"
-      - "traefik.http.routers.traefik-dashboard.tls.certresolver=leresolver"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=<user:pass>"
-      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
-    networks:
-      - traefik-public
+      # Permite que o Portainer acesse o Docker diretamente
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Define onde os dados do Portainer serão armazenados
+      - portainer_data:/data
+
+    # Variáveis de ambiente
     environment:
+      # Define o fuso horário do container
       - TZ=America/Sao_Paulo
 
-  portainer:
-    image: portainer/portainer-ce:2.20.1
-    command: -H unix:///var/run/docker.sock
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
+    # Labels para configuração do Traefik
     labels:
+      # Habilita o Traefik para gerenciar o Portainer
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.yourdomain.com`)"
+      # Define a regra para acessar o Portainer
+      # Substitua 'portainer.seudominio.com' pelo seu próprio subdomínio
+      - "traefik.http.routers.portainer.rule=Host(`portainer.seudominio.com`)"
+      # Acessa o Portainer via HTTPS
       - "traefik.http.routers.portainer.entrypoints=websecure"
+      # Define a porta interna do Portainer
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      # Define o serviço para o Portainer
       - "traefik.http.routers.portainer.service=portainer"
+      # Usa o resolver de certificados configurado para HTTPS
       - "traefik.http.routers.portainer.tls.certresolver=leresolver"
-      - "traefik.http.routers.edge.rule=Host(`edge.yourdomain.com`)"
+      # Configura outro host para o Portainer
+      # Substitua 'edge.seudominio.com' pelo seu próprio subdomínio
+      - "traefik.http.routers.edge.rule=Host(`edge.seudominio.com`)"
+      # Acessa o serviço via HTTPS
       - "traefik.http.routers.edge.entrypoints=websecure"
+      # Define a porta interna do serviço 'edge'
       - "traefik.http.services.edge.loadbalancer.server.port=8000"
+      # Define o serviço 'edge'
       - "traefik.http.routers.edge.service=edge"
+      # Usa o resolver de certificados configurado para HTTPS
       - "traefik.http.routers.edge.tls.certresolver=leresolver"
-    networks:
-      - traefik-public
 
+    # Coloca o Portainer na rede pública configurada
+    networks:
+      - portainer
+
+# Define os volumes que serão utilizados pelos serviços
 volumes:
+  # Volume para armazenar os dados do Portainer
   portainer_data:
 
+# Define as redes que serão usadas pelos serviços
 networks:
-  traefik-public:
-    external: true
+  # Usa uma rede Docker já existente chamada 'portainer'
+  portainer:
+    # O 'external: true' indica que a rede 'portainer' já deve existir previamente.
+    # Isso é útil quando você quer que múltiplos serviços compartilhem uma rede
+    external: true  
