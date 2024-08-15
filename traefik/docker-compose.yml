@@ -116,7 +116,7 @@ services:
       - "traefik.http.routers.edge.tls.certresolver=leresolver"  
     # Coloca o Portainer na rede pública configurada
     networks:
-      - traefik-public  
+      - traefik  
 
 # Define os volumes que serão utilizados pelos serviços
 volumes:
