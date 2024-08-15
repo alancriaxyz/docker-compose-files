@@ -1,0 +1,132 @@
+# Define os serviços que serão executados no Docker
+services:
+
+  # Serviço Traefik, que funciona como um proxy reverso
+  traefik:
+    # Nome do container para facilitar identificação
+    container_name: traefik  
+    # Usando a versão mais recente da imagem do Traefik
+    image: "traefik:latest"  
+    # Reinicia automaticamente o container em caso de falha
+    restart: always  
+    command:
+      # Configura a porta 80 (HTTP)
+      - --entrypoints.web.address=:80  
+      # Configura a porta 443 (HTTPS)
+      - --entrypoints.websecure.address=:443  
+      # Habilita o painel de controle do Traefik
+      - --api.dashboard=true  
+      # Habilita a integração do Traefik com Docker
+      - --providers.docker  
+      # Define a rede do Docker que o Traefik vai usar
+      - --providers.docker.network=traefik-public  
+      # Define o nível de logs para mostrar apenas erros
+      - --log.level=ERROR  
+      # Configura para usar certificados HTTPS automáticos (Let's Encrypt)
+      - --certificatesresolvers.leresolver.acme.httpchallenge=true  
+      # E-mail para registrar os certificados
+      # Substitua 'seuemail@example.com' pelo seu próprio e-mail
+      - --certificatesresolvers.leresolver.acme.email=seuemail@example.com  
+      # Onde os certificados serão armazenados
+      # Primeiro, crie o arquivo com 'touch acme.json'
+      # Em seguida, defina as permissões corretas com 'sudo chmod 600 acme.json'      
+      - --certificatesresolvers.leresolver.acme.storage=/acme.json  
+      # Define que o desafio de verificação será pela porta 80 (HTTP)
+      - --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web  
+    ports:
+      # Mapeia a porta 80 do container para a porta 80 do host (HTTP)
+      - "80:80"  
+      # Mapeia a porta 443 do container para a porta 443 do host (HTTPS)
+      - "443:443"  
+    volumes:
+      # Permite que o Traefik acesse o Docker para detectar novos containers
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"  
+      # Monta o arquivo de certificados para o Traefik usar
+      - "./acme.json:/acme.json"  
+    labels:
+      # Redireciona todas as requisições HTTP para HTTPS
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"  
+      # Define o ponto de entrada para o redirecionamento como HTTP
+      - "traefik.http.routers.http-catchall.entrypoints=web"  
+      # Aplica o middleware de redirecionamento para HTTPS
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"  
+      # Define o esquema de redirecionamento para HTTPS
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"  
+      # Define a regra para acessar o painel do Traefik
+      # Substitua 'traefik.seudominio.com' pelo seu próprio subdomínio
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.seudominio.com`)"  
+      # Acessa o painel via HTTPS
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"  
+      # Usa o serviço interno de API do Traefik
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"  
+      # Usa o resolver de certificados configurado para HTTPS
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=leresolver"  
+      # Adiciona autenticação básica para o painel do Traefik
+      # Para gerar o usuário e senha criptografados, siga os passos abaixo:
+      # 1. Instale o utilitário Apache: 'sudo apt-get install apache2-utils -y'
+      # 2. Gere o par usuário/senha com: 'htpasswd -nbB USUARIO SENHA'
+      # 3. Substitua 'usuario:senha_criptografada' pelo resultado do comando acima
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=usuario:senha_criptografada"
+      # Aplica a autenticação ao painel do Traefik
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"  
+    # Coloca o Traefik na rede pública configurada
+    networks:
+      - traefik-public  
+    environment:
+      # Define o fuso horário do container
+      - TZ=America/Sao_Paulo  
+
+  # Serviço Portainer, ferramenta de gerenciamento de containers Docker
+  portainer:
+    # Define a imagem do Portainer com uma versão específica
+    image: portainer/portainer-ce:2.20.1  
+    # Conecta o Portainer ao Docker através do socket Unix
+    command: -H unix:///var/run/docker.sock  
+    # Reinicia automaticamente o container em caso de falha
+    restart: always  
+    volumes:
+      # Permite que o Portainer acesse o Docker diretamente
+      - /var/run/docker.sock:/var/run/docker.sock  
+      # Define onde os dados do Portainer serão armazenados
+      - portainer_data:/data  
+    labels:
+      # Habilita o Traefik para gerenciar o Portainer
+      - "traefik.enable=true"  
+      # Define a regra para acessar o Portainer
+      # Substitua 'portainer.seudominio.com' pelo seu próprio subdomínio
+      - "traefik.http.routers.portainer.rule=Host(`portainer.seudominio.com`)" 
+      # Acessa o Portainer via HTTPS
+      - "traefik.http.routers.portainer.entrypoints=websecure"  
+      # Define a porta interna do Portainer
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"  
+      # Define o serviço para o Portainer
+      - "traefik.http.routers.portainer.service=portainer"  
+      # Usa o resolver de certificados configurado para HTTPS
+      - "traefik.http.routers.portainer.tls.certresolver=leresolver"  
+      # Configura outro host para o Portainer
+      # Substitua 'edge.seudominio.com' pelo seu próprio subdomínio
+      - "traefik.http.routers.edge.rule=Host(`edge.seudominio.com`)"  
+      # Acessa o serviço via HTTPS
+      - "traefik.http.routers.edge.entrypoints=websecure"  
+      # Define a porta interna do serviço 'edge'
+      - "traefik.http.services.edge.loadbalancer.server.port=8000"  
+      # Define o serviço 'edge'
+      - "traefik.http.routers.edge.service=edge"  
+      # Usa o resolver de certificados configurado para HTTPS
+      - "traefik.http.routers.edge.tls.certresolver=leresolver"  
+    # Coloca o Portainer na rede pública configurada
+    networks:
+      - traefik-public  
+
+# Define os volumes que serão utilizados pelos serviços
+volumes:
+  # Volume para armazenar os dados do Portainer
+  portainer_data:  
+
+# Define as redes que serão usadas pelos serviços
+networks:
+  # Usa uma rede Docker já existente chamada 'traefik-public'
+  traefik-public:
+    # O 'external: true' indica que a rede 'traefik' já deve existir previamente.
+    # Isso é útil quando você quer que múltiplos serviços compartilhem uma rede
+    external: true  
