@@ -30,9 +30,12 @@ services:
 
   # Serviço Portainer, ferramenta de gerenciamento de containers Docker
   portainer:
-
+  
     # Define a imagem do Portainer com uma versão específica
     image: portainer/portainer-ce:latest
+  
+    # Nome do container para facilitar identificação
+    container_name: portainer  
 
     # Comandos específicos a serem executados ao iniciar o container
     command: -H unix:///var/run/docker.sock
