@@ -37,11 +37,11 @@ services:
     # Nome do container para facilitar identificação
     container_name: portainer  
 
-    # Comandos específicos a serem executados ao iniciar o container
-    command: -H unix:///var/run/docker.sock
-
     # Reinicia automaticamente o container em caso de falha
     restart: always
+    
+    # Comandos específicos a serem executados ao iniciar o container
+    command: -H unix:///var/run/docker.sock
 
     # Volumes compartilhados
     volumes:
