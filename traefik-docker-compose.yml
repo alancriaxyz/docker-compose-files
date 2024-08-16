@@ -6,11 +6,15 @@
 #  \__,_|_|\__,_|_| |_|\___|_|  |_|\__,_/_/\_\\__, /___|
 #                                             |___/
 # ==============================================================================
+#
 # IMPORTANTE:
+#
 # As variáveis e configurações comentadas neste arquivo permitem que o Traefik
 # seja acessado via web. Modifique essas configurações APENAS se você tiver 
 # certeza do que está fazendo, pois podem expor sua aplicação à internet.
+#
 # ==============================================================================
+#
 # REQUISITOS NECESSÁRIOS:
 #
 # Antes de executar `docker-compose -f traefik-docker-compose.yml up -d`
