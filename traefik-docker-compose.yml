@@ -74,15 +74,6 @@ services:
       # Define que o desafio de verificação será pela porta 80 (HTTP)
       - --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web      
 
-    # Mapeamento de portas
-    ports:
-
-      # Mapeia a porta 80 do container para a porta 80 do host (HTTP)
-      - "80:80"
-
-      # Mapeia a porta 443 do container para a porta 443 do host (HTTPS)
-      - "443:443"      
-
     # Volumes compartilhados
     volumes:
 
@@ -92,6 +83,15 @@ services:
       # Permite que o Traefik acesse o arquivo de certificados
       - "./acme.json:/acme.json"
 
+    # Mapeamento de portas
+    ports:
+
+      # Mapeia a porta 80 do container para a porta 80 do host (HTTP)
+      - "80:80"
+
+      # Mapeia a porta 443 do container para a porta 443 do host (HTTPS)
+      - "443:443"      
+      
     # Labels para configurar o Traefik
     labels:
 
