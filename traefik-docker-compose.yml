@@ -37,11 +37,11 @@ services:
   # Serviço Traefik, que funciona como um proxy reverso
   traefik:
 
-    # Nome do container para facilitar identificação
-    container_name: traefik
-
     # Usando a versão mais recente da imagem do Traefik
     image: "traefik:latest"
+    
+    # Nome do container para facilitar identificação
+    container_name: traefik
 
     # Reinicia automaticamente o container em caso de falha
     restart: always
