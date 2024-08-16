@@ -70,7 +70,7 @@ services:
       # Habilita a integração do Traefik com Docker
       - --providers.docker
       # Define a rede do Docker que o Traefik vai usar
-      - --providers.docker.network=traefik-public
+      - --providers.docker.network=traefik
       # Define o nível de logs para mostrar apenas erros
       - --log.level=ERROR
       # Configura para usar certificados HTTPS automáticos (Let's Encrypt)
