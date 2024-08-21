@@ -29,7 +29,7 @@
 #    - "traefik.http.routers.n8n.rule=Host(`n8n.seudominio.com`)"
 #
 # Só então execute o comando:
-#    $ docker-compose -f postgres-docker-compose.yml up -d
+#    $ docker-compose -f n8n-docker-compose.yml up -d
 #
 # ===============================================================================
 
