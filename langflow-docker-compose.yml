@@ -44,7 +44,8 @@ services:
 
     # Define a imagem do Docker que será utilizada
     image: langflowai/langflow:1.0.14
-    
+
+    # Define o usuário como root para garantir permissões adequadas.
     user: root
 
     # Nome do container para facilitar identificação
