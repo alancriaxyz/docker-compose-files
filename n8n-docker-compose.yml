@@ -126,10 +126,14 @@ services:
       # Define o schema do banco de dados PostgreSQL
       DB_POSTGRESDB_SCHEMA: db_schema
 
-    # Define os volumes que serão usados pelos serviços
+    # Volumes compartilhados
     volumes:
-      - /root/n8n/.n8n:/root/.n8n
-      - /root/n8n-local-files:/files
+      - n8n-data:/home/node/.n8n
+
+# Define os volumes que serão usados pelos serviços
+volumes:
+  n8n-data:
+    name: n8n-data
 
 networks:
   default:
