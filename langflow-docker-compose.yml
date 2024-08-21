@@ -1,0 +1,117 @@
+# ===============================================================================
+#        _                       _
+#   __ _| | __ _ _ __   ___ _ __(_) __ ___  ___   _ ____
+#  / _` | |/ _` | '_ \ / __| '__| |/ _` \ \/ / | | |_  /
+# | (_| | | (_| | | | | (__| |  | | (_| |>  <| |_| |/ /
+#  \__,_|_|\__,_|_| |_|\___|_|  |_|\__,_/_/\_\\__, /___|
+#                                             |___/
+# ===============================================================================
+#
+# IMPORTANTE:
+#
+# Modifique essas configurações APENAS se você tiver certeza do que está fazendo.
+#
+# ===============================================================================
+#
+# REQUISITOS NECESSÁRIOS:
+#
+# É extremamente importante seguir os seguintes passos:
+#
+# 1. Altere as variáveis relacionadas ao PostgreSQL conforme necessário:
+#    - LANGFLOW_DATABASE_URL: postgresql://db_user:db_password@db_ip:5432/db_name
+#
+# 2. Altere os campos `langflow.seudominio.com` para os valores corretos do seu domínio:
+#    - "traefik.http.routers.langflow.rule=Host(`langflow.seudominio.com`)"
+#    - "BACKEND_URL=https://langflow.seudominio.com/"
+#
+# 3. Gere uma chave de criptografia e substitua a variável `LANGFLOW_SECRET_KEY`:
+#    - Você pode gerar uma chave usando: https://generate-random.org/api-key-generator
+#
+# 4. Defina o nome de usuário e senha do superusuário:
+#    - LANGFLOW_SUPERUSER: nome_do_seu_usuario
+#    - LANGFLOW_SUPERUSER_PASSWORD: senha_do_seu_usuario
+#
+# Só então execute o comando:
+#    $ docker-compose -f langflow-docker-compose.yml up -d
+#
+# ===============================================================================
+
+# Define os serviços que serão executados no Docker
+services:
+
+  # Define o serviço
+  langflow:
+
+    # Define a imagem do Docker que será utilizada
+    image: langflowai/langflow:latest
+
+    # Nome do container para facilitar identificação
+    container_name: langflow  
+
+    # Reinicia automaticamente o container em caso de falha
+    restart: always
+
+    # Define as labels para o Traefik
+    labels:
+
+      # Habilita o serviço no Traefik
+      - "traefik.enable=true"
+
+      # Define a regra para acessar o Langflow
+      # Substitua 'langflow.seudominio.com' pelo seu próprio subdomínio
+      - "traefik.http.routers.langflow.rule=Host(`langflow.seudominio.com.br`)" 
+
+     # Define os pontos de entrada para o Langflow (HTTP e HTTPS)
+      - "traefik.http.routers.langflow.entrypoints=web,websecure"
+      
+      # Usa o resolvedor de certificados TLS configurado para HTTPS
+      - "traefik.http.routers.langflow.tls.certresolver=leresolver"
+      
+      # Define a porta interna do Langflow para o balanceador de carga
+      - "traefik.http.services.langflow.loadbalancer.server.port=7860"
+
+    # Define as variáveis de ambiente
+    environment:
+
+      # Define o fuso horário do container
+      TZ: America/Sao_Paulo  
+
+      # URL de conexão com o banco de dados PostgreSQL
+      LANGFLOW_DATABASE_URL: postgresql://db_user:db_password@db_ip:5432/db_name
+
+      # Worker processes
+      LANGFLOW_WORKERS: 1
+
+      # Diretório de configuração do Langflow
+      # Diretório onde os arquivos e logs serão armazenados.
+      LANGFLOW_CONFIG_DIR: /var/lib/langflow
+
+      # Defina AUTO_LOGIN como false se você quiser desabilitar o login automático
+      # e usar o formulário de login para entrar. LANGFLOW_SUPERUSER e LANGFLOW_SUPERUSER_PASSWORD
+      # devem ser definidos se AUTO_LOGIN estiver definido como false
+      # Valores: true, false
+      LANGFLOW_AUTO_LOGIN: false
+
+      # Define o nome de usuário do superusuário
+      LANGFLOW_SUPERUSER: nome_do_seu_usuario
+
+      # Define a senha do superusuário
+      LANGFLOW_SUPERUSER_PASSWORD: senha_do_seu_usuario 
+
+      # Uma chave usada para criptografar a senha do superusuário.
+      # Gere uma chave em: https://generate-random.org/api-key-generator
+      LANGFLOW_SECRET_KEY: 'sua_chave_de_criptografia'
+
+      # URL do backend do Langflow
+      # Substitua 'langflow.seudominio.com' pelo seu próprio subdomínio
+      BACKEND_URL: langflow.seudominio.com/
+
+    # Define os volumes que serão usados pelos serviços
+    volumes:
+      - ${DATA_FOLDER}/.n8n:/root/.n8n
+      - /root/n8n-local-files:/files
+
+networks:
+  default:
+    name: traefik
+    external: true
