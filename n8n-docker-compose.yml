@@ -126,6 +126,7 @@ services:
       # Define o schema do banco de dados PostgreSQL
       DB_POSTGRESDB_SCHEMA: db_schema
 
+    # Define os volumes que serão usados pelos serviços
     volumes:
       - ${DATA_FOLDER}/.n8n:/root/.n8n
       - /root/n8n-local-files:/files
