@@ -43,7 +43,9 @@ services:
   langflow:
 
     # Define a imagem do Docker que será utilizada
-    image: langflowai/langflow:latest
+    image: langflowai/langflow:1.0.14
+    
+    user: root
 
     # Nome do container para facilitar identificação
     container_name: langflow  
@@ -58,15 +60,15 @@ services:
       - "traefik.enable=true"
 
       # Define a regra para acessar o Langflow
-      # Substitua 'langflow.seudominio.com' pelo seu próprio subdomínio
-      - "traefik.http.routers.langflow.rule=Host(`langflow.seudominio.com`)" 
+      # Substitua 'langflow.seudominio.com' pelo seu próprio subdomínio      
+      - "traefik.http.routers.langflow.rule=Host(`langflow.alancria.xyz`)" 
 
-     # Define os pontos de entrada para o Langflow (HTTP e HTTPS)
+      # Define os pontos de entrada para o Langflow (HTTP e HTTPS)
       - "traefik.http.routers.langflow.entrypoints=web,websecure"
-      
+
       # Usa o resolvedor de certificados TLS configurado para HTTPS
       - "traefik.http.routers.langflow.tls.certresolver=leresolver"
-      
+
       # Define a porta interna do Langflow para o balanceador de carga
       - "traefik.http.services.langflow.loadbalancer.server.port=7860"
 
@@ -82,7 +84,6 @@ services:
       # Worker processes
       LANGFLOW_WORKERS: 1
 
-      # Diretório de configuração do Langflow
       # Diretório onde os arquivos e logs serão armazenados.
       LANGFLOW_CONFIG_DIR: /var/lib/langflow
 
@@ -104,12 +105,16 @@ services:
 
       # URL do backend do Langflow
       # Substitua 'langflow.seudominio.com' pelo seu próprio subdomínio
-      BACKEND_URL: langflow.seudominio.com/
-
+      BACKEND_URL: langflow.seudominio.com
+    
     # Define os volumes que serão usados pelos serviços
     volumes:
-      - ${DATA_FOLDER}/.n8n:/root/.n8n
-      - /root/n8n-local-files:/files
+      - langflow-data:/var/lib/langflow
+
+# Define os volumes que serão usados pelos serviços
+volumes:
+  langflow-data:
+    name: langflow-data
 
 networks:
   default:
