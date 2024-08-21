@@ -18,11 +18,11 @@
 # É extremamente importante seguir os seguintes passos:
 #
 # 1. Altere as variáveis relacionadas ao PostgreSQL conforme necessário:
-#    - DB_POSTGRESDB_HOST: Endereço IP ou nome do host do servidor PostgreSQL
-#    - DB_POSTGRESDB_DATABASE: Nome do banco de dados PostgreSQL
-#    - DB_POSTGRESDB_USER: Nome do usuário do PostgreSQL
-#    - DB_POSTGRESDB_PASSWORD: Senha do usuário do PostgreSQL
-#    - DB_POSTGRESDB_SCHEMA: Schema do banco de dados PostgreSQL
+#    DB_POSTGRESDB_HOST: Endereço IP ou nome do host do servidor PostgreSQL
+#    DB_POSTGRESDB_DATABASE: Nome do banco de dados PostgreSQL
+#    DB_POSTGRESDB_USER: Nome do usuário do PostgreSQL
+#    DB_POSTGRESDB_PASSWORD: Senha do usuário do PostgreSQL
+#    DB_POSTGRESDB_SCHEMA: Schema do banco de dados PostgreSQL
 #
 # 2. Altere os campos `n8n.seudominio.com` e `seudominio.com` para os valores 
 #    corretos do seu domínio.
@@ -84,47 +84,47 @@ services:
 
       # Define o host
       # Substitua 'n8n.seudominio.com' pelo seu próprio subdomínio
-      - N8N_HOST=n8n.seudominio.com
+      N8N_HOST: n8n.seudominio.com
 
       # Define a porta
-      - N8N_PORT=5678
+      N8N_PORT: 5678
 
       # Define o protocolo
-      - N8N_PROTOCOL=https
+      N8N_PROTOCOL: https
 
       # Reinstala pacotes automaticamente ao iniciar o N8N
-      - N8N_REINSTALL_MISSING_PACKAGES=true
+      N8N_REINSTALL_MISSING_PACKAGES: true
 
       # Define a chave de criptografia
-      - N8N_ENCRYPTION_KEY="your_key"
+      N8N_ENCRYPTION_KEY: "your_key"
 
       # Define o ambiente de produção
-      - NODE_ENV=production
+      NODE_ENV: production
 
       # Define o webhook
       # Substitua 'n8n.seudominio.com' pelo seu próprio subdomínio
-      - WEBHOOK_URL=https://n8n.seudominio.com
+      WEBHOOK_URL: https://n8n.seudominio.com
 
       # Define o fuso horário do container
-      - GENERIC_TIMEZONE=America/Sao_Paulo  
+      GENERIC_TIMEZONE: America/Sao_Paulo  
 
       # Define o tipo de banco de dados como PostgreSQL
-      - DB_TYPE=postgresdb
+      DB_TYPE: postgresdb
       
       # Define o endereço IP ou nome do host do servidor PostgreSQL
-      - DB_POSTGRESDB_HOST=db_ip
+      DB_POSTGRESDB_HOST: db_ip
       
       # Define o nome do banco de dados PostgreSQL a ser usado
-      - DB_POSTGRESDB_DATABASE=db_name
+      DB_POSTGRESDB_DATABASE: db_name
       
       # Define o nome do usuário do PostgreSQL
-      - DB_POSTGRESDB_USER=db_user
+      DB_POSTGRESDB_USER: db_user
       
       # Define a senha do usuário do PostgreSQL
-      - DB_POSTGRESDB_PASSWORD=db_password
+      DB_POSTGRESDB_PASSWORD: db_password
       
       # Define o schema do banco de dados PostgreSQL
-      - DB_POSTGRESDB_SCHEMA=db_schema
+      DB_POSTGRESDB_SCHEMA: db_schema
 
     volumes:
       - ${DATA_FOLDER}/.n8n:/root/.n8n
