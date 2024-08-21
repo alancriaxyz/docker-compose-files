@@ -59,7 +59,7 @@ services:
 
       # Define a regra para acessar o Langflow
       # Substitua 'langflow.seudominio.com' pelo seu próprio subdomínio
-      - "traefik.http.routers.langflow.rule=Host(`langflow.seudominio.com.br`)" 
+      - "traefik.http.routers.langflow.rule=Host(`langflow.seudominio.com`)" 
 
      # Define os pontos de entrada para o Langflow (HTTP e HTTPS)
       - "traefik.http.routers.langflow.entrypoints=web,websecure"
