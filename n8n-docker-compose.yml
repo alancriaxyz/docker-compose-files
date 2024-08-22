@@ -135,6 +135,7 @@ volumes:
   n8n-data:
     name: n8n-data
 
+# Define a rede externa para o Traefik
 networks:
   default:
     name: traefik
