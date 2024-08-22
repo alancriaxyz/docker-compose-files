@@ -1,0 +1,247 @@
+# ===============================================================================
+#        _                       _
+#   __ _| | __ _ _ __   ___ _ __(_) __ ___  ___   _ ____
+#  / _` | |/ _` | '_ \ / __| '__| |/ _` \ \/ / | | |_  /
+# | (_| | | (_| | | | | (__| |  | | (_| |>  <| |_| |/ /
+#  \__,_|_|\__,_|_| |_|\___|_|  |_|\__,_/_/\_\\__, /___|
+#                                             |___/
+# ===============================================================================
+#
+# IMPORTANTE:
+#
+# Modifique essas configurações APENAS se você tiver certeza do que está fazendo.
+#
+# ===============================================================================
+#
+# REQUISITOS NECESSÁRIOS:
+#
+# É extremamente importante seguir os seguintes passos:
+#
+# 1. Altere a URL da Evolution API para a URL correta do seu domínio:
+#    - SERVER_URL: 
+#
+# 2. Altere o cliente do telefone na sessão conforme necessário:
+#    - CONFIG_SESSION_PHONE_CLIENT: 
+#
+# 3. Defina a chave da API para autenticação (AUTHENTICATION_API_KEY):
+#    - AUTHENTICATION_API_KEY: 
+#    - Gere uma chave em: https://generate-random.org/api-key-generator
+#
+# 4. Altere a URL de conexão com o banco de dados PostgreSQL conforme necessário:
+#    - DATABASE_CONNECTION_URI: postgresql://db_user:db_password@db_ip:5432/db_name
+#
+# 5. Altere a URI de conexão com o Redis conforme necessário:
+#    - CACHE_REDIS_URI: 
+#
+# 6. Altere o domínio para o serviço evo conforme necessário:
+#    - "traefik.http.routers.evo.rule=Host(`evo.seudominio.com`)"
+#
+# Só então execute o comando:
+#    $ docker-compose -f evo-docker-compose.yml up -d
+#
+# ===============================================================================
+
+# Define os serviços que serão executados no Docker
+services:
+
+  # Define o serviço evo
+  evo:
+
+    # Define a imagem do Docker que será utilizada
+    image: atendai/evolution-api:v2.0.7-rc
+
+    # Nome do container para facilitar identificação
+    container_name: evo  
+
+    # Reinicia automaticamente o container em caso de falha
+    restart: always
+
+    # Define as variáveis de ambiente    
+    environment:
+
+
+      ##################################################
+      # CONFIGURAÇÕES GERAIS                           #
+      ##################################################
+
+      # Define o fuso horário do container
+      TZ: America/Sao_Paulo      
+      
+      # Idioma da aplicação
+      LANGUAGE: pt-BR
+
+      # URL da Evolution API
+      # Substitua 'evo.seudominio.com' pelo seu próprio domínio    
+      SERVER_URL: https://evo.seudominio.com
+
+      # Nome do cliente do telefone na sessão
+      CONFIG_SESSION_PHONE_CLIENT: Evolution
+
+      # Nome do navegador na sessão do telefone
+      CONFIG_SESSION_PHONE_NAME: Chrome
+
+      # Define a versão do WhatsApp Web
+      # Pegue a versão em: https://web.whatsapp.com/check-update?version=0&platform=web
+      CONFIG_SESSION_PHONE_VERSION: 2.2413.51
+
+      # Configura o limite de tentativas para exibição do QR-Code
+      QRCODE_LIMIT: 30    
+
+      # Configurações das Instâncias
+      DEL_INSTANCE: false    
+
+      ##################################################
+      # AUTENTICAÇÃO                                   #
+      ##################################################
+
+      # Tipo de autenticação
+      AUTHENTICATION_TYPE: apikey
+
+      # Chave de API para autenticação
+      # Você pode gerar uma chave usando: https://generate-random.org/api-key-generator
+      AUTHENTICATION_API_KEY: sua_chave_de_api
+
+      # Expõe a autenticação na busca de instâncias
+      AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: true
+
+      ##################################################
+      # POSTGRESQL                                     #
+      ##################################################
+
+      # Ativa o Banco de Dados Postgres
+      DATABASE_ENABLED: true
+
+      # Define o provedor do banco de dados
+      DATABASE_PROVIDER: postgresql
+
+      # URL de conexão com o banco de dados PostgreSQL
+      DATABASE_CONNECTION_URI: postgresql://db_user:db_password@db_ip:5432/db_name?schema=evo
+
+      # Nome do cliente de conexão do banco de dados
+      DATABASE_CONNECTION_CLIENT_NAME: evolution
+
+      # Configurações de salvamento de dados
+      DATABASE_SAVE_DATA_INSTANCE: true
+      DATABASE_SAVE_DATA_NEW_MESSAGE: true
+      DATABASE_SAVE_MESSAGE_UPDATE: true
+      DATABASE_SAVE_DATA_CONTACTS: true
+      DATABASE_SAVE_DATA_CHATS: true
+      DATABASE_SAVE_DATA_LABELS: true
+      DATABASE_SAVE_DATA_HISTORIC: true
+
+      ##################################################
+      # OPENAI                                         #
+      ##################################################
+
+      # Ativa a OpenAI para interações com IA
+      OPENAI_ENABLED: true
+
+      ##################################################
+      # S3                                             #
+      ##################################################
+
+      # Configura o armazenamento em S3 ou MinIO
+      S3_ENABLED: false
+      S3_ACCESS_KEY: 
+      S3_SECRET_KEY: 
+      S3_BUCKET: evolution
+      S3_PORT: 443
+      S3_ENDPOINT:
+      S3_USE_SSL: true     
+
+      ##################################################
+      # REDIS                                          #
+      ##################################################
+
+      # Ativa o Cache Redis
+      CACHE_REDIS_ENABLED: true
+
+      # URI de conexão com o Redis
+      CACHE_REDIS_URI: redis://redis:6379/1
+
+      # Prefixo das chaves do Redis
+      CACHE_REDIS_PREFIX_KEY: evolution
+
+      # Define se deve salvar instâncias no Redis
+      CACHE_REDIS_SAVE_INSTANCES: false
+
+      # Ativa o cache local (desativado por padrão)
+      CACHE_LOCAL_ENABLED: false
+
+      ##################################################
+      # WEBHOOKS                                       #
+      ##################################################
+
+      # Informações do Webhook (Desabilitado por padrão)
+      WEBHOOK_GLOBAL_ENABLED: false
+      WEBHOOK_GLOBAL_URL: ''
+      WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS: false
+
+      # Eventos do Webhook
+      WEBHOOK_EVENTS_APPLICATION_STARTUP: false
+      WEBHOOK_EVENTS_QRCODE_UPDATED: true
+      WEBHOOK_EVENTS_MESSAGES_SET: true
+      WEBHOOK_EVENTS_MESSAGES_UPSERT: true
+      WEBHOOK_EVENTS_MESSAGES_EDITED: true
+      WEBHOOK_EVENTS_MESSAGES_UPDATE: true
+      WEBHOOK_EVENTS_MESSAGES_DELETE: true
+      WEBHOOK_EVENTS_SEND_MESSAGE: true
+      WEBHOOK_EVENTS_CONTACTS_SET: true
+      WEBHOOK_EVENTS_CONTACTS_UPSERT: true
+      WEBHOOK_EVENTS_CONTACTS_UPDATE: true
+      WEBHOOK_EVENTS_PRESENCE_UPDATE: true
+      WEBHOOK_EVENTS_CHATS_SET: true
+      WEBHOOK_EVENTS_CHATS_UPSERT: true
+      WEBHOOK_EVENTS_CHATS_UPDATE: true
+      WEBHOOK_EVENTS_CHATS_DELETE: true
+      WEBHOOK_EVENTS_GROUPS_UPSERT: true
+      WEBHOOK_EVENTS_GROUPS_UPDATE: true
+      WEBHOOK_EVENTS_GROUP_PARTICIPANTS_UPDATE: true
+      WEBHOOK_EVENTS_CONNECTION_UPDATE: true
+      WEBHOOK_EVENTS_LABELS_EDIT: true
+      WEBHOOK_EVENTS_LABELS_ASSOCIATION: true
+      WEBHOOK_EVENTS_CALL: true
+      WEBHOOK_EVENTS_TYPEBOT_START: false
+      WEBHOOK_EVENTS_TYPEBOT_CHANGE_STATUS: false
+      WEBHOOK_EVENTS_ERRORS: false
+      WEBHOOK_EVENTS_ERRORS_WEBHOOK: 
+
+    labels:
+
+        # Habilita o serviço no Traefik
+        - traefik.enable=true
+
+        # Define a regra para acessar o serviço evo
+        # Substitua 'evo.seudominio.com' pelo seu próprio subdomínio              
+        - traefik.http.routers.evo.rule=Host(`evo.seudominio.com`)
+
+        # Define os pontos de entrada para o evo (apenas HTTPS)
+        - traefik.http.routers.evo.entrypoints=websecure
+
+        # Usa o resolvedor de certificados TLS configurado para HTTPS
+        - traefik.http.routers.evo.tls.certresolver=letsencryptresolver
+
+        # Define a prioridade da rota
+        - traefik.http.routers.evo.priority=1
+
+        # Define o serviço no Traefik
+        - traefik.http.routers.evo.service=evo
+
+        # Configura o balanceador de carga para o serviço evo
+        - traefik.http.services.evo.loadbalancer.server.port=8080
+        - traefik.http.services.evo.loadbalancer.passHostHeader=true
+
+    # Volumes utilizados pelo serviço evo
+    volumes:
+      - evo-data:/evolution/instances 
+
+# Define os volumes que serão usados pelos serviços
+volumes:
+  evo-data:
+    name: evo-data
+
+# Define as redes utilizadas pelos serviços
+networks:
+  default:
+    name: traefik
+    external: true
