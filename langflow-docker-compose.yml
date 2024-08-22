@@ -117,6 +117,7 @@ volumes:
   langflow-data:
     name: langflow-data
 
+# Define a rede externa para o Traefik
 networks:
   default:
     name: traefik
