@@ -101,7 +101,7 @@ services:
       LANGFLOW_SUPERUSER_PASSWORD: senha_do_seu_usuario 
 
       # Uma chave usada para criptografar a senha do superusuário.
-      # Gere uma chave em: https://generate-random.org/api-key-generator
+      # Gere uma chave em: https://fernetkeygen.com
       LANGFLOW_SECRET_KEY: 'sua_chave_de_criptografia'
 
       # URL do backend do Langflow
