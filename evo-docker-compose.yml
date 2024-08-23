@@ -208,28 +208,21 @@ services:
 
     labels:
 
-        # Habilita o serviço no Traefik
-        - traefik.enable=true
+      # Habilita o serviço no Traefik
+      - "traefik.enable=true"
 
-        # Define a regra para acessar o serviço evo
-        # Substitua 'evo.seudominio.com' pelo seu próprio subdomínio              
-        - traefik.http.routers.evo.rule=Host(`evo.seudominio.com`)
+      # Define a regra para acessar o Langflow
+      # Substitua 'langflow.seudominio.com' pelo seu próprio subdomínio      
+      - "traefik.http.routers.evo.rule=Host(`evo.seudominio.com`)" 
 
-        # Define os pontos de entrada para o evo (apenas HTTPS)
-        - traefik.http.routers.evo.entrypoints=websecure
+      # Define os pontos de entrada para o Langflow (HTTP e HTTPS)
+      - "traefik.http.routers.evo.entrypoints=web,websecure"
 
-        # Usa o resolvedor de certificados TLS configurado para HTTPS
-        - traefik.http.routers.evo.tls.certresolver=letsencryptresolver
+      # Usa o resolvedor de certificados TLS configurado para HTTPS
+      - "traefik.http.routers.evo.tls.certresolver=leresolver"
 
-        # Define a prioridade da rota
-        - traefik.http.routers.evo.priority=1
-
-        # Define o serviço no Traefik
-        - traefik.http.routers.evo.service=evo
-
-        # Configura o balanceador de carga para o serviço evo
-        - traefik.http.services.evo.loadbalancer.server.port=8080
-        - traefik.http.services.evo.loadbalancer.passHostHeader=true
+      # Define a porta interna do Langflow para o balanceador de carga
+      - "traefik.http.services.evo.loadbalancer.server.port=8080"
 
     # Volumes utilizados pelo serviço evo
     volumes:
