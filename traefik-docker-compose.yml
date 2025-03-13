@@ -66,7 +66,7 @@ services:
 
       # E-mail para registrar os certificados
       # Substitua 'seuemail@example.com' pelo seu próprio e-mail
-      - --certificatesresolvers.leresolver.acme.email=alancriaxyz@gmail.com
+      - --certificatesresolvers.leresolver.acme.email=seuemail@gmail.com
 
       # Monta o arquivo de certificados para o Traefik usar
       - --certificatesresolvers.leresolver.acme.storage=./acme.json
