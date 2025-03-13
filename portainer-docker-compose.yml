@@ -74,6 +74,9 @@ services:
       # Usa o resolver de certificados configurado para HTTPS
       - "traefik.http.routers.portainer.tls.certresolver=leresolver"
 
+      # Adicionar esta linha para forçar TLS
+      - "traefik.http.routers.portainer.tls=true"      
+
 # Define os volumes que serão usados pelos serviços
 volumes:
 
