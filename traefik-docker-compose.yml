@@ -27,7 +27,7 @@
 #    - `--certificatesresolvers.leresolver.acme.email=seuemail@example.com
 #
 # Só então execute o comando:
-#    $ docker-compose -f traefik-docker-compose.yml up -d
+#    $ docker compose -f traefik-docker-compose.yml up -d
 #
 # ===============================================================================
 
@@ -66,7 +66,7 @@ services:
 
       # E-mail para registrar os certificados
       # Substitua 'seuemail@example.com' pelo seu próprio e-mail
-      - --certificatesresolvers.leresolver.acme.email=seuemail@example.com
+      - --certificatesresolvers.leresolver.acme.email=alancriaxyz@gmail.com
 
       # Monta o arquivo de certificados para o Traefik usar
       - --certificatesresolvers.leresolver.acme.storage=./acme.json
